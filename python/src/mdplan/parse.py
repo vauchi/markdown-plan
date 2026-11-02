@@ -1,13 +1,10 @@
-from datetime import date, datetime
-import re
+# SPDX-FileCopyrightText: 2026 Mattia Egloff <mattia.egloff@pm.me>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
 
 from . import utils
 from .task import Task
 from .tree import Tree, build_tree_from_indents
-
-TODAY = date.today()
-NOW = datetime.now()
-
 
 WHITESPACE = [" ", "\t"]
 
@@ -48,10 +45,11 @@ def get_dependencies(string):
     groups = utils.find_groups(string, ["@(", ")"])
     if not groups:
         return []
-    assert len(groups) == 1
-    string = groups[0]
-    splits = string.split(",")
-    return [split.strip() for split in splits]
+    deps = []
+    for group in groups:
+        splits = group.split(",")
+        deps.extend([split.strip() for split in splits])
+    return deps
 
 
 def is_done(line):
@@ -91,8 +89,9 @@ def get_description(content):
         start = 3
     elif content.startswith("[ ]"):
         start = 3
-    if re.search(r"""@\(.*\)""", content):
-        end = content.find("@(")
+    dep_pos = content.find("@(")
+    if dep_pos != -1:
+        end = dep_pos
     return content[start:end].strip()
 
 
@@ -104,7 +103,13 @@ def infer_indent(text) -> str:
         return "\t"  # default
     chartype = indents[0][0]
     together = "".join(indents)
-    assert together.count(chartype) == len(together), "Indentation must be consistent"
+    if together.count(chartype) != len(together):
+        first_bad = next(
+            indent for indent in indents if indent[0] != chartype
+        )
+        raise ValueError(
+            f"mixed indentation: expected {chartype!r} but found {first_bad!r}"
+        )
     counts = {len(indent) for indent in indents}
     return utils.gcd(*counts) * chartype
 
@@ -157,12 +162,8 @@ def parse_task(line):
     return Task(description=description, done=done, dependencies=dependencies)
 
 
-def sliding_pairs(arr: list):
-    return [(arr[i], arr[i + 1]) for i in range(len(arr) - 1)]
-
-
 def is_code_block_delimiter(line):
-    return line.startswith("```")
+    return line.strip().startswith("```")
 
 
 def remove_code_blocks(lines: list[str]) -> list[str]:
@@ -180,10 +181,24 @@ def remove_code_blocks(lines: list[str]) -> list[str]:
     return out
 
 
+def join_continuation_lines(lines: list[str]) -> list[str]:
+    """Join non-task continuation lines onto the preceding task line."""
+    joined = []
+    for line in lines:
+        if not line.strip():
+            joined.append(line)
+        elif is_task(line):
+            joined.append(line)
+        elif joined:
+            joined[-1] += " " + line.strip()
+    return joined
+
+
 def parse_tree(plan: str) -> Tree[Task]:
     indent = infer_indent(plan)
     lines = plan.splitlines()
     lines = remove_code_blocks(lines)
+    lines = join_continuation_lines(lines)
     filtered_lines = [line for line in lines if is_task(line)]
     indents = [calculate_nesting_level(line, indent) for line in filtered_lines]
     tasks = [parse_task(line) for line in filtered_lines]

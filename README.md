@@ -57,12 +57,13 @@ Tasks can be organized into hierarchical lists, ordered or unordered.
 
 A task can be marked as "done" with an `[x]` at the beginning:
 
-```
+```md
 - [x] my finished task
 - [ ] todo
 ```
 
-Tasks can also have explicit dependencies using the `@(...)` syntax, although this is rarely needed.
+Tasks can also have explicit dependencies using the `@(...)` syntax,
+although this is rarely needed.
 
 ```md
 - task1
@@ -77,15 +78,19 @@ The substring cannot include commas.
 
 Any valid plan can be parsed into a [tree](<https://en.wikipedia.org/wiki/Tree_(data_structure)>) or a [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph), depending on the user's needs.
 
-It is possible to create cyclic dependencies using the dependency notation above.
+It is possible to create cyclic dependencies using the dependency
+notation above.
 A plan with cyclic dependencies is not a valid plan.
 
 ## Extensions
 
-The core syntax described above is as simple as possible by design. But it is useful to extend it, like add optional dates and time intervals to tasks.
+The core syntax described above is as simple as possible by design.
+But it is useful to extend it, like add optional dates and time
+intervals to tasks.
 See the Gantt example below.
 
-Any "extended" syntax must still be parseable as a "vanilla" markdown plan, as specified by this document.
+Any "extended" syntax must still be parseable as a "vanilla"
+markdown plan, as specified by this document.
 
 ## Installing
 
@@ -107,8 +112,6 @@ Basic usage:
 mdplan history example.plan.md # outputs json
 mdplan plot example.plan.md # opens a plot
 ```
-
-![Burn-up chart in browser](images/browser-chart.png)
 
 ### Library
 
@@ -163,26 +166,6 @@ python3 -m pip install .
 pytest
 ```
 
-## Examples
-
-There are various other tools / repos for visualizing a plan. For example...
-
-A Gantt chart generated from a markdown plan ([topological ordering](https://en.wikipedia.org/wiki/Topological_sorting)):
-
-![Example schedule](images/schedule.png)
-
-A little [desktop app](https://github.com/rexgarland/SimplePlanner), for those who don't want to think about git.
-
-![Desktop app](images/desktop-app.jpg)
-
-A [mobile app](https://rexgarland.dev/app/markdown-plan/), for on-the-go.
-
-![mobile app screenshot](images/mobile-app.png)
-
-Visualizing a markdown plan as a [DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph) of tasks ([demo](https://rexgarland.dev/app/markdown-plan-web)):
-
-![Generated DAG](images/dag.png)
-
 ## Motivation
 
 The main goal is to make planning easier and more useful.
@@ -201,10 +184,8 @@ Good plans should be:
 Plans that are hard to read or write are difficult to share.
 
 Plans that are easy to edit encourage adapting to change.
-Editing is easier if the history of edits is never lost, and each edit can be documented.
+Editing is easier if the history of edits is never lost, and each
+edit can be documented.
 
-If a plan is easy to parse, people are encouraged to build their own tools to help interpret the plan.
-
-## Prior Art
-
-This project was inspired by Thomas Figg's "[Programming is Terrible](https://www.youtube.com/watch?v=csyL9EC0S0c)," Andrew Steel's [gantt](https://github.com/andrew-ls/gantt) repo, Dave Farley's video "[How to Estimate Software Development Time](https://www.youtube.com/watch?v=v21jg8wb1eU)," and Allen Holub's talk "[No Estimates](https://www.youtube.com/watch?v=QVBlnCTu9Ms)" (itself inspired by the book by [Vasco Duarte](https://www.amazon.com/NoEstimates-Measure-Project-Progress-Estimating-ebook/dp/B01FWMSBBK)).
+If a plan is easy to parse, people are encouraged to build their own
+tools to help interpret the plan.

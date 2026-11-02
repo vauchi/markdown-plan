@@ -1,4 +1,4 @@
-from ..count import count_all_tasks, count_remaining_tasks
+from ..count import count_all_tasks, count_remaining_tasks, count_tasks
 
 
 def test_counts_a_flat_list():
@@ -51,3 +51,27 @@ def test_counts_all_tasks():
     num = count_all_tasks(plan)
 
     assert num == 3
+
+
+class TestCountTasks:
+    def test_returns_total_and_done_and_remaining(self):
+        plan = """
+- [x] done1
+- [x] done2
+- [ ] todo1
+"""
+        result = count_tasks(plan)
+        assert result.total == 3
+        assert result.done == 2
+        assert result.remaining == 1
+
+    def test_trickles_completion(self):
+        plan = """
+- [x] parent
+  - [ ] child1
+  - [ ] child2
+"""
+        result = count_tasks(plan)
+        assert result.total == 2
+        assert result.done == 2
+        assert result.remaining == 0

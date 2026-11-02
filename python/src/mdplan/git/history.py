@@ -67,7 +67,7 @@ def find_closest_repo(path: Path):
     for folder in path.parents:
         if is_repo(folder):
             return folder
-    raise Exception("Could not find a git repo containing '{path}'")
+    raise Exception(f"Could not find a git repo containing '{path}'")
 
 
 class GitHistory(Sequence):
@@ -95,7 +95,7 @@ class GitHistory(Sequence):
             blob = tree[str(relpath)]
             if blob:
                 return blob.data.decode("utf-8")
-        except:
+        except (KeyError, OSError):
             pass
 
     def find_versions(self):
