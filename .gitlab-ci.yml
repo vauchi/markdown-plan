@@ -7,7 +7,19 @@ include:
     file:
       - '/ci-templates/github-mirror.yml'
 
+test:
+  image: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/python:3.12-slim-bookworm
+  tags: [docker]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_TAG
+  script:
+    # The git fixtures unpack a repository owned by another uid, which
+    # libgit2 refuses to open for root unless it is a safe directory.
+    - printf '[safe]\n\tdirectory = *\n' > "$HOME/.gitconfig"
+    - pip install --quiet "./python[tests]"
+    - cd python && python -m pytest -q
+
 github-mirror:
   extends: .github-mirror
-  # GitLab creates no pipeline whose only jobs are in .post.
-  stage: deploy
