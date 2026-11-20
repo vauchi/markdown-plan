@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 Mattia Egloff <mattia.egloff@pm.me>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+include:
+  - project: 'vauchi/scripts'
+    ref: ci-templates-v2026.11.19
+    file:
+      - '/ci-templates/github-mirror.yml'
+
+github-mirror:
+  extends: .github-mirror
+  # GitLab creates no pipeline whose only jobs are in .post.
+  stage: deploy
